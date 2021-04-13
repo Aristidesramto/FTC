@@ -6,10 +6,12 @@ const session = require('express-session')
 const Handlebars = require('handlebars');
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 const flash = require('connect-flash')
+const passport = require('passport')
+
 //Inicializaciones
 const app = express()
 require('./database')
-
+require('./config/passport')
 
 //Settings
 app.set('port', process.env.PORT || 3000)
@@ -37,12 +39,16 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(flash())
 
 // Variables globales
 app.use((req, res,next) => {
     res.locals.success_msg = req.flash('success_msg')
     res.locals.error_msg = req.flash('error_msg')
+    res.locals.error = req.flash('error')
     next()
 })
 
